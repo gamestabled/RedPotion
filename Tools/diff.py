@@ -20,7 +20,7 @@ def get_elf_symbol(sym_name: str):
     if not elf_exists:
         fail(f"{getElfPath()} not found")
     # find Stubs.c range (horrible)
-    with open(f"{getBuildPath()}/RedPepper.map") as f:
+    with open(f"{getBuildPath()}/RedPotion.map") as f:
         s = StringIO(f.read())
         for line in s:
             if len(line.split()) == 6 and line.split()[5] == 'Stubs.o(stubs)':

@@ -1,15 +1,9 @@
 [submodule "Tools/asm-differ"]
 	path = Tools/asm-differ
 	url = https://github.com/3dsdecomp/asm-differ
-[submodule "Library/RedPepper-Headers"]
-	path = Library/RedPepper-Headers
-	url = https://github.com/3dsdecomp/RedPepper-Headers
-[submodule "Library/LibMessageStudio"]
-	path = Library/LibMessageStudio
-	url = https://github.com/3dsdecomp/LibMessageStudio
 [submodule "Library/nnsdk"]
 	path = Library/nnsdk
 	url = https://github.com/3dsdecomp/nnsdk
-[submodule "Library/sead"]
-	path = Library/sead
-	url = https://github.com/3dsdecomp/sead
+[submodule "Tools/n3dsdisasm"]
+	path = Dissasembly/n3dsdisasm
+	url = https://github.com/EstexNT/n3dsdisasm.git

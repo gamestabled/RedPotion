@@ -14,8 +14,6 @@ find_program(ARM_LINK NAMES armlink.exe PATHS $ENV{ARMCC_PATH}/bin REQUIRED NO_D
 # find_program(ARM_FROMELF NAMES fromelf.exe PATHS $ENV{ARMCC_PATH}/bin REQUIRED NO_DEFAULT_PATH) # not important
 
 add_subdirectory(Library/nnsdk)
-add_subdirectory(Library/sead)
-add_subdirectory(Library/LibMessageStudio)
 
 macro (set_compilers)
     set(CMAKE_CXX_COMPILER_ID ARMCC)
@@ -34,7 +32,7 @@ if (WIN32)
     set(CMAKE_ASM_COMPILER_WORKS TRUE)
 endif()
 
-project(RedPepper C CXX ASM)
+project(RedPotion C CXX ASM)
 
 if (NOT WIN32)
     set_compilers()
@@ -49,15 +47,13 @@ __compiler_armcc(ASM)
 file(GLOB_RECURSE csourcefiles "Source/*.c")
 file(GLOB_RECURSE cxxsourcefiles "Source/*.cpp")
 
-add_executable(RedPepper ${csourcefiles} ${cxxsourcefiles})
+add_executable(RedPotion ${csourcefiles} ${cxxsourcefiles})
 
-target_link_libraries(RedPepper PUBLIC 
+target_link_libraries(RedPotion PUBLIC 
                                 nnsdk
-                                sead
-                                LibMessageStudio
                                 )
 
-target_link_options(RedPepper PUBLIC
+target_link_options(RedPotion PUBLIC
     --cpu=MPCore --entry=__ctr_start --startup=__ctr_start --library_type=standardlib
     --ref_cpp_init --scanlib --legacyalign
     --tailreorder --no_remove --datacompressor=off --arm_only
@@ -66,18 +62,18 @@ target_link_options(RedPepper PUBLIC
     --scatter=${CMAKE_CURRENT_BINARY_DIR}/Linker.ld
     )
 
-target_compile_options(RedPepper PUBLIC $<$<COMPILE_LANGUAGE:CXX>:
+target_compile_options(RedPotion PUBLIC $<$<COMPILE_LANGUAGE:CXX>:
     --apcs=//interwork --cpu=MPCore --fpmode=fast --cpp --arm --force_new_nothrow
     --signed_chars --multibyte-chars --locale=japanese --no_vfe # workaround, vfe should be enabled
     --no_rtti_data --no_rtti --no_exceptions -O3 -Otime --data-reorder --split_sections --forceinline
     >)
 
-target_compile_options(RedPepper PUBLIC $<$<COMPILE_LANGUAGE:C>:
+target_compile_options(RedPotion PUBLIC $<$<COMPILE_LANGUAGE:C>:
     --apcs=//interwork --cpu=MPCore --fpmode=fast --c99 --arm
     --signed_chars --multibyte-chars --locale=japanese
     -Otime --data-reorder --split_sections
     >)
 
-target_compile_definitions(RedPepper PUBLIC NON_MATCHING=)
+target_compile_definitions(RedPotion PUBLIC NON_MATCHING=)
 
-target_include_directories(RedPepper PUBLIC ${CMAKE_SOURCE_DIR}/Include)
+target_include_directories(RedPotion PUBLIC ${CMAKE_SOURCE_DIR}/Include Library/nnsdk/Include)

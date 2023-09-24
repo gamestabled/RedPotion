@@ -1,6 +1,6 @@
 def getBuildPath():
     return 'Build'
 def getElfName():
-    return 'RedPepper.axf'
+    return 'RedPotion.axf'
 def getElfPath():
     return f"{getBuildPath()}/{getElfName()}"
