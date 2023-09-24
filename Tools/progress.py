@@ -1,126 +1,148 @@
-from time import sleep
-from diff import *
-from colorama import Fore
+#!/usr/bin/env python3
+
+import argparse
 import json
+import csv
+import git
+import os
+import re
+from pathlib import Path
 
-import datetime
-from git import Repo
-import io
-import matplotlib
-import matplotlib.pyplot as plt
-import matplotlib.ticker
-import numpy as np
-import sys
+parser = argparse.ArgumentParser(description="Computes current progress throughout the whole project.")
+parser.add_argument("format", nargs="?", default="text", choices=["text", "csv", "shield-json"])
+parser.add_argument("-m", "--matching", dest='matching', action='store_true',
+                    help="Output matching progress instead of decompilation progress")
+args = parser.parse_args()
 
-def get_matching_bytes(orig: str, other: str):
-    matching = 0
-    with open(orig, 'rb') as orig_file:
-        with open(other, 'rb') as other_file:
-            while (b := orig_file.read(4)):
-                if other_file.read(4) == b:
-                    matching += 4
-    return matching
+NON_MATCHING_PATTERN = r'#ifdef\s+NON_MATCHING.*?\s+GLOBAL_ASM\s*\(\s*\"(.*?)\"\s*\).*?#endif'
+NOT_ATTEMPTED_PATTERN = r'\s+GLOBAL_ASM\s*\(\s*"asm/(.*?)"\s*\)'
 
-def main():
+def GetFunctionsByPattern(pattern, files):
+    functions = []
 
-    syms_undefined = 0
-    syms_major = 0
-    syms_minor = 0
-    syms_ok = 0
-    syms_total = 0
-    bytes_ok = get_matching_bytes("code.bin", getBuildPath() + "/code.bin")
-    addrs = []
-    addrs_changed = False
-    code_bin_size = os.path.getsize('code.bin')
+    for file in files:
+        with open(file) as f:
+            functions += re.findall(pattern, f.read(), re.DOTALL)
 
-    unnamed_syms = read_sym_file('Symbols/Unnamed.sym')
-    for sym in unnamed_syms:
-        addrs.append(sym[1])
+    return functions
 
-    for subdir, dirs, files in os.walk('Symbols'):
-        for file in files:
-            filepath = os.path.join(subdir, file)
-            syms = read_sym_file(filepath)
-            for sym in syms:
-                if "Unnamed.sym" not in file and sym[1] in addrs:
-                    addrs.remove(sym[1])
-                    print("Unnamed function at " + "{:08x}".format(sym[1]) + " moved to " + sym[0])
-                    addrs_changed = True
-                    syms_undefined -= 1
-                    syms_total -= 1
-                syms_total += 1
-                match sym[2]:
-                    case 'U':
-                        syms_undefined += 1
-                    case 'M':
-                        syms_major += 1
-                    case 'm':
-                        syms_minor += 1
-                    case 'O':
-                        syms_ok += 1
+def ReadAllLines(fileName):
+    lineList = list()
+    with open(fileName) as f:
+        lineList = f.readlines()
 
-    def print_type(name: str, amount: str, number_color: Fore):
-        print(name + ": " + (32 - len(name) - 2 ) * " " + number_color + amount + Fore.RESET)
-    def write_type(rank: str, name: str, amount: str, color: str):
-        out = {
-            "label": name,
-            "message": amount,
-            "color": color,
-            "schemaVersion": 1
-        }
-        with open('Data/' + rank + '.json','w') as f:
-            f.write(json.dumps(out))
+    return lineList
 
+def GetFiles(path, ext):
+    files = []
+    
+    for r, d, f in os.walk(path):
+        for file in f:
+            if file.endswith(ext):
+                files.append(os.path.join(r, file))
 
-    bytes_ok_str = "{:.4f}% ({:,} bytes/{:,} bytes)".format((bytes_ok / code_bin_size) * 100, int(bytes_ok), int(code_bin_size))
+    return files
 
-    print_type("Total Functions", str(syms_total), Fore.RESET);
-    print_type("Matching", str(syms_ok), Fore.GREEN);
-    print_type("Non-matching", str(syms_ok + syms_major + syms_minor), Fore.YELLOW);
-    print_type("code.bin", bytes_ok_str, Fore.CYAN);
+allFiles = GetFiles("Source", ".cpp")
 
-    write_type('Total', "Total Functions", str(syms_total), 'inactive');
-    write_type('OK', "Matching", str(syms_ok), "success");
-    write_type('NonMatching', "Non-matching", str(syms_ok + syms_major + syms_minor), "yellow");
-    write_type('Code', "code.bin", bytes_ok_str, "informational");
+nonMatchingFunctions = GetFunctionsByPattern(NON_MATCHING_PATTERN, allFiles)
+notAttemptedFunctions = GetFunctionsByPattern(NOT_ATTEMPTED_PATTERN, allFiles)
 
-    x_values = [datetime.datetime.now()]
-    y_values = [(bytes_ok / code_bin_size) * 100]
+if not args.matching:
+    nonMatchingFunctions = []
 
-    np.seterr(all="ignore")
-    repo = Repo(".")
-    for commit in repo.iter_commits():
-        file = None
-        try:
-            file = commit.tree / 'Data' / 'Code.json'
-        except:
-            break
-        with io.BytesIO(file.data_stream.read()) as f:
-            x_values.append(datetime.datetime.fromtimestamp(commit.committed_date))
-            y_values.append(float(json.loads(f.read().decode('utf-8'))['message'].split('%')[0]))
+def GetNonMatchingSize(path):
+    size = 0
 
-    fig,ax = plt.subplots()
+    asmFiles = GetFiles(path, ".s")
 
-    dates = matplotlib.dates.date2num(x_values)
-    ax.set_title("Progress")
-    ax.xaxis.set_major_formatter(matplotlib.dates.ConciseDateFormatter(ax.xaxis.get_major_locator()))
-    ax.yaxis.set_major_formatter(matplotlib.ticker.PercentFormatter())
-    ax.plot_date(dates, y_values, '-')
+    for asmFilePath in asmFiles:
+        asmFilePath = Path(asmFilePath)
+        if asmFilePath.name in notAttemptedFunctions:
+            asmLines = ReadAllLines(asmFilePath)
 
-    plt.savefig('Data/Progress.png')
+            for asmLine in asmLines:
+                if asmLine.startswith("\t"):
+                    if not (asmLine.startswith("\t.") or asmLine.startswith("\tarm_func_start") or asmLine.startswith("\t.byte")):
+                        size += 4
+                    elif asmLine.startswith("\t.byte"):
+                        size += int((len(asmLine.strip()) - 4) / 6)
+                elif asmLine.count(".4byte") > 0:
+                    size += 4
 
-    if addrs_changed:
-        print("Rewriting Unnamed.sym, do not interrupt", end='\r')
-        with open('Symbols/Unnamed.sym', 'w') as f:
-            for addr in addrs:
-                addr_str = "{:08x}".format(addr)
-                f.write("FUN_" + addr_str + "," + addr_str + ",4,U\n")
-
-    if 'show' in sys.argv:
-        import mplcursors
-        mplcursors.cursor(ax, hover=True)
-        plt.show()
+    return size
 
 
-if __name__ == "__main__":
-    main()
+# mapFile = ReadAllLines("build/z64.map")
+# src = 0x3C97B8
+# code = 0
+# boot = 0
+# ovl = 0
+
+# for line in mapFile:
+#     lineSplit =  list(filter(None, line.split(" ")))
+
+#     if (len(lineSplit) == 4 and lineSplit[0].startswith(".")):
+#         section = lineSplit[0]
+#         size = int(lineSplit[2], 16)
+#         objFile = lineSplit[3]
+
+#         if (section == ".text"):
+#             if (objFile.startswith("build/src")):
+#                 src += size
+
+#             if (objFile.startswith("build/src/code") or objFile.startswith("build/src/libultra_code")):
+#                 code += size
+#             elif (objFile.startswith("build/src/boot") or objFile.startswith("build/src/libultra_boot")):
+#                 boot += size
+#             elif (objFile.startswith("build/src/overlays")):
+#                 ovl += size
+
+nonMatchingASM = GetNonMatchingSize("Dissasembly/asm")
+print("nonMatchingASM size: ", nonMatchingASM)
+
+total = 0x3C97B8
+src = total - nonMatchingASM
+
+srcPct = 100 * src / total
+# codePct = 100 * code / codeSize
+# bootPct = 100 * boot / bootSize
+# ovlPct = 100 * ovl / ovlSize
+
+bytesPerHeartPiece = total / 80
+
+if args.format == 'csv':
+    version = 1
+    git_object = git.Repo().head.object
+    timestamp = str(git_object.committed_date)
+    git_hash = git_object.hexsha
+    # csv_list = [str(version), timestamp, git_hash, str(code), str(codeSize), str(boot), str(bootSize), str(ovl), str(ovlSize), str(src), str(nonMatchingASM), str(len(nonMatchingFunctions))]
+    csv_list = [str(version), timestamp, git_hash, str(src), str(nonMatchingASM), str(len(nonMatchingFunctions))]
+    print(",".join(csv_list))
+elif args.format == 'shield-json':
+    # https://shields.io/endpoint
+    print(json.dumps({
+        "schemaVersion": 1,
+        "label": "progress",
+        "message": f"{srcPct:.3g}%",
+        "color": 'yellow',
+    }))
+elif args.format == 'text':
+    adjective = "decompiled" if not args.matching else "matched"
+
+    print(str(total) + " total bytes of decompilable code\n")
+    print(str(src) + " bytes " + adjective + " in src " + str(srcPct) + "%\n")
+    # print(str(boot) + "/" + str(bootSize) + " bytes " + adjective + " in boot " + str(bootPct) + "%\n")
+    # print(str(code) + "/" + str(codeSize) + " bytes " + adjective + " in code " + str(codePct) + "%\n")
+    # print(str(ovl) + "/" + str(ovlSize) + " bytes " + adjective + " in overlays " + str(ovlPct) + "%\n")
+    print("------------------------------------\n")
+
+    heartPieces = int(src / bytesPerHeartPiece)
+    rupees = int(((src % bytesPerHeartPiece) * 100) / bytesPerHeartPiece)
+
+    if (rupees > 0):
+        print("You have " + str(heartPieces) + "/80 heart pieces and " + str(rupees) + " rupee(s).\n")
+    else:
+        print("You have " + str(heartPieces) + "/80 heart pieces.\n")
+else:
+    print("Unknown format argument: " + args.format)

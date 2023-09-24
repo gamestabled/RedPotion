@@ -1,0 +1,17 @@
+_ZN2nn3dsp3CTR17IsComponentLoadedEv,002e1ef0,16,O
+_ZN2nn3dsp3CTR15UnloadComponentEv,002ce818,108,O
+_ZN2nn3dsp3CTR21SetSemaphoreEventMaskEt,0044a1a8,44,O
+_ZN2nn3dsp3CTR6WakeUpEv,002ea6f8,184,O
+_ZN2nn3dsp3CTR23GetSemaphoreEventHandleEPNS_6HandleE,0044a1d4,44,O
+_ZN2nn3dsp3CTR23RegisterInterruptEventsENS_6HandleEii,002e1d58,156,O
+_ZN2nn3dsp3CTR22OrderToWaitForFinalizeEv,002ce47c,80,O
+_ZN2nn3dsp3CTR10InitializeEv,00422d20,220,O
+_ZN2nn3dsp3CTR5AwakeEv,00436070,28,O
+_ZN2nn3dsp3CTR18GetHeadphoneStatusEPb,002fa25c,36,O
+_ZN2nn3dsp3CTR27RegisterSleepWakeUpCallbackEPFvvES3_S3_,00436018,88,O
+_ZN2nn3dsp3CTR12SetSemaphoreEt,002e1ce8,44,O
+_ZN2nn3dsp3CTR32ConvertProcessAddressFromDspDramEjPj,002e1b1c,60,O
+_ZN2nn3dsp3CTR16WriteProcessPipeEiPKhj,002e1d14,68,O
+_ZN2nn3dsp3CTR8RecvDataEtPt,00453884,52,O
+_ZN2nn3dsp3CTR18ReadPipeIfPossibleEiPhtPt,002e1b58,72,O
+_ZN2nn3dsp3CTR15RecvDataIsReadyEtPb,004537e4,52,O

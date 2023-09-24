@@ -11,9 +11,10 @@ find_program(ARM_ASM NAMES armasm.exe PATHS $ENV{ARMCC_PATH}/bin REQUIRED NO_DEF
 find_program(ARM_AR NAMES armar.exe PATHS $ENV{ARMCC_PATH}/bin REQUIRED NO_DEFAULT_PATH)
 find_program(ARM_CC NAMES armcc.exe PATHS $ENV{ARMCC_PATH}/bin REQUIRED NO_DEFAULT_PATH)
 find_program(ARM_LINK NAMES armlink.exe PATHS $ENV{ARMCC_PATH}/bin REQUIRED NO_DEFAULT_PATH)
-# find_program(ARM_FROMELF NAMES fromelf.exe PATHS $ENV{ARMCC_PATH}/bin REQUIRED NO_DEFAULT_PATH) # not important
+find_program(ARM_FROMELF NAMES fromelf.exe PATHS $ENV{ARMCC_PATH}/bin REQUIRED NO_DEFAULT_PATH)
 
 add_subdirectory(Library/nnsdk)
+add_subdirectory(Dissasembly)
 
 macro (set_compilers)
     set(CMAKE_CXX_COMPILER_ID ARMCC)
@@ -44,10 +45,42 @@ __compiler_armcc(C)
 __compiler_armcc(CXX)
 __compiler_armcc(ASM)
 
+set(DEPS_DIR ${CMAKE_CURRENT_BINARY_DIR}/deps)
+set(ASM_LIBS_DIR ${CMAKE_CURRENT_BINARY_DIR}/asm_libs)
+set(DISASSEMBLY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Dissasembly)
+file(MAKE_DIRECTORY ${DEPS_DIR} ${ASM_LIBS_DIR})
+
 file(GLOB_RECURSE csourcefiles "Source/*.c")
 file(GLOB_RECURSE cxxsourcefiles "Source/*.cpp")
+file(GLOB_RECURSE asm_libs "${ASM_LIBS_DIR}")
 
 add_executable(RedPotion ${csourcefiles} ${cxxsourcefiles})
+target_link_directories(RedPotion PUBLIC ${asm_libs})
+
+find_program(DEVKITARM_GCC NAMES arm-none-eabi-gcc.exe PATHS $ENV{DEVKITARM}/bin REQUIRED NO_DEFAULT_PATH)
+
+foreach(CPP_FILE ${cxxsourcefiles})
+    get_filename_component(FILE_NAME ${CPP_FILE} NAME_WE)
+    add_custom_command(
+        OUTPUT ${DEPS_DIR}/${FILE_NAME}.deps
+        COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/tools/preproc.py ${CPP_FILE} ${DEPS_DIR}/${FILE_NAME}.deps "${DISASSEMBLY_DIR}/"
+        DEPENDS ${CPP_FILE}
+    )
+    add_custom_target(${FILE_NAME}_deps DEPENDS ${DEPS_DIR}/${FILE_NAME}.deps)
+endforeach()
+
+foreach(CPP_FILE ${cxxsourcefiles})
+    get_filename_component(FILE_NAME ${CPP_FILE} NAME_WE)
+    set(DEPS_FILE ${DEPS_DIR}/${FILE_NAME}.deps)
+    add_custom_command(
+        OUTPUT ${ASM_LIBS_DIR}/${FILE_NAME}_asm.o
+        COMMAND cd ${DISASSEMBLY_DIR} && python3 ${CMAKE_CURRENT_SOURCE_DIR}/tools/build_asm_deps.py "${DEVKITARM_GCC} -mfpu=vfpv2 -mcpu=MPCore -march=armv6k -marm -mno-thumb-interwork -r" "${DEPS_FILE}" "${ASM_LIBS_DIR}/${FILE_NAME}_asm.o"
+        DEPENDS ${DEPS_DIR}/${FILE_NAME}.deps disasm
+    )
+    add_custom_target(${FILE_NAME}_asm DEPENDS ${ASM_LIBS_DIR}/${FILE_NAME}_asm.o)
+    add_dependencies(RedPotion ${FILE_NAME}_asm)
+    target_link_libraries(RedPotion PUBLIC ${ASM_LIBS_DIR}/${FILE_NAME}_asm.o)
+endforeach()
 
 target_link_libraries(RedPotion PUBLIC 
                                 nnsdk
@@ -56,10 +89,10 @@ target_link_libraries(RedPotion PUBLIC
 target_link_options(RedPotion PUBLIC
     --cpu=MPCore --entry=__ctr_start --startup=__ctr_start --library_type=standardlib
     --ref_cpp_init --scanlib --legacyalign
-    --tailreorder --no_remove --datacompressor=off --arm_only
+    --tailreorder --no_remove --datacompressor=off
     --inline 
     --verbose --mangled --symbols --paged
-    --scatter=${CMAKE_CURRENT_BINARY_DIR}/Linker.ld
+    --scatter=${CMAKE_CURRENT_SOURCE_DIR}/Data/oot3d.ld
     )
 
 target_compile_options(RedPotion PUBLIC $<$<COMPILE_LANGUAGE:CXX>:
@@ -74,6 +107,7 @@ target_compile_options(RedPotion PUBLIC $<$<COMPILE_LANGUAGE:C>:
     -Otime --data-reorder --split_sections
     >)
 
-target_compile_definitions(RedPotion PUBLIC NON_MATCHING=)
+target_include_directories(RedPotion PUBLIC ${CMAKE_SOURCE_DIR}/Include ${CMAKE_SOURCE_DIR}/Library/nnsdk/Include ${CMAKE_SOURCE_DIR}/Source/Game)
 
-target_include_directories(RedPotion PUBLIC ${CMAKE_SOURCE_DIR}/Include Library/nnsdk/Include)
+add_dependencies(RedPotion disasm)
+

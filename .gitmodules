@@ -4,6 +4,6 @@
 [submodule "Library/nnsdk"]
 	path = Library/nnsdk
 	url = https://github.com/3dsdecomp/nnsdk
-[submodule "Tools/n3dsdisasm"]
+[submodule "Dissasembly/n3dsdisasm"]
 	path = Dissasembly/n3dsdisasm
 	url = https://github.com/EstexNT/n3dsdisasm.git
