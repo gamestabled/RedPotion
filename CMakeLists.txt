@@ -91,7 +91,7 @@ target_link_options(RedPotion PUBLIC
     --ref_cpp_init --scanlib --legacyalign
     --tailreorder --no_remove --datacompressor=off
     --inline 
-    --verbose --mangled --symbols --paged
+    --verbose --mangled --symbols
     --scatter=${CMAKE_CURRENT_SOURCE_DIR}/Data/oot3d.ld
     )
 

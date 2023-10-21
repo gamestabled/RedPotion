@@ -2,18 +2,28 @@ cmake_minimum_required(VERSION 3.24)
 
 project(disassembly ASM)
 
-set(BASEROM baserom.3ds)
+set(BASEROM ${CMAKE_CURRENT_SOURCE_DIR}/baserom.3ds)
 set(BASEROM_DIR ${CMAKE_CURRENT_SOURCE_DIR}/baserom)
 make_directory(${BASEROM_DIR})
 
-find_program(CTRTOOL NAMES ctrtool ctrtool.exe PATHS ${CMAKE_CURRENT_SOURCE_DIR}/tools REQUIRED NO_DEFAULT_PATH)
+set(TOOLS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tools)
+
+set(DISASM_CONFIG ${CMAKE_CURRENT_SOURCE_DIR}/oot3d.cfg)
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(CTRTOOL ${TOOLS_DIR}/ctrtool.exe)
+    set(N3DSDISASM ${TOOLS_DIR}/n3dsdisasm.exe)
+else()
+    set(CTRTOOL ${TOOLS_DIR}/ctrtool)
+    set(N3DSDISASM ${TOOLS_DIR}/n3dsdisasm)
+endif()
 
 add_custom_command(
     DEPENDS ${BASEROM}
-    COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && wsl ./tools/ctrtool --exefsdir=${BASEROM_DIR}/exefs ${BASEROM}
-    COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && wsl ./tools/ctrtool --exheader=${BASEROM_DIR}/exheader.bin ${BASEROM}
-    COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && wsl ./tools/ctrtool --romfsdir=${BASEROM_DIR}/romfs ${BASEROM}
-    COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && wsl ./tools/ctrtool --plainrgn=${BASEROM_DIR}/plainrgn.bin ${BASEROM}
+    COMMAND ${CTRTOOL} --exefsdir=${BASEROM_DIR}/exefs ${BASEROM}
+    COMMAND ${CTRTOOL} --exheader=${BASEROM_DIR}/exheader.bin ${BASEROM}
+    COMMAND ${CTRTOOL} --romfsdir=${BASEROM_DIR}/romfs ${BASEROM}
+    COMMAND ${CTRTOOL} --plainrgn=${BASEROM_DIR}/plainrgn.bin ${BASEROM}
     OUTPUT ${BASEROM_DIR}/exefs/code.bin ${BASEROM_DIR}/exheader.bin
     COMMENT "Extracting files from baserom.3ds..."
 )
@@ -25,7 +35,7 @@ add_custom_target(
 
 add_custom_command(
     DEPENDS extract_baserom
-    COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && py ./tools/exefs2elf.py
+    COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && py ${TOOLS_DIR}/exefs2elf.py
     OUTPUT ${BASEROM_DIR}/baserom.elf
     COMMENT "Creating baserom.elf..."
 )
@@ -37,7 +47,7 @@ add_custom_target(
 
 add_custom_command(
     DEPENDS extract_baserom
-    COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && wsl ./tools/n3dsdisasm -c oot3d.cfg ${BASEROM_DIR}/exefs/code.bin > ${BASEROM_DIR}/baserom.s
+    COMMAND ${N3DSDISASM} -c ${DISASM_CONFIG} ${BASEROM_DIR}/exefs/code.bin > ${BASEROM_DIR}/baserom.s
     OUTPUT ${BASEROM_DIR}/baserom.s
     COMMENT "Disassembling code.bin into baserom.s..."
 )
