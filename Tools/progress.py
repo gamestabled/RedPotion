@@ -98,7 +98,7 @@ def GetNonMatchingSize(path):
 #             elif (objFile.startswith("build/src/overlays")):
 #                 ovl += size
 
-nonMatchingASM = GetNonMatchingSize("Dissasembly/asm")
+nonMatchingASM = GetNonMatchingSize("Disassembly/asm")
 print("nonMatchingASM size: ", nonMatchingASM)
 
 total = 0x3C97B8

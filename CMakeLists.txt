@@ -14,7 +14,7 @@ find_program(ARM_LINK NAMES armlink.exe PATHS $ENV{ARMCC_PATH}/bin REQUIRED NO_D
 find_program(ARM_FROMELF NAMES fromelf.exe PATHS $ENV{ARMCC_PATH}/bin REQUIRED NO_DEFAULT_PATH)
 
 add_subdirectory(Library/nnsdk)
-add_subdirectory(Dissasembly)
+add_subdirectory(Disassembly)
 
 macro (set_compilers)
     set(CMAKE_CXX_COMPILER_ID ARMCC)
@@ -47,7 +47,7 @@ __compiler_armcc(ASM)
 
 set(DEPS_DIR ${CMAKE_CURRENT_BINARY_DIR}/deps)
 set(ASM_LIBS_DIR ${CMAKE_CURRENT_BINARY_DIR}/asm_libs)
-set(DISASSEMBLY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Dissasembly)
+set(DISASSEMBLY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Disassembly)
 file(MAKE_DIRECTORY ${DEPS_DIR} ${ASM_LIBS_DIR})
 
 file(GLOB_RECURSE csourcefiles "Source/*.c")
