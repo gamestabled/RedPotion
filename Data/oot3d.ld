@@ -73002,11 +73002,11 @@ WakeUp_004372bc 0x004372bc
 		* (i.WakeUp_004372bc)
 	}
 }
-FUN_0043732c 0x0043732c
+_ZN2nn3srv6detail7Service16GetServiceHandleEPNS_6HandleEPKcij 0x0043732c
 {
-	FUN_0043732c 0x0043732c
+	_ZN2nn3srv6detail7Service16GetServiceHandleEPNS_6HandleEPKcij 0x0043732c
 	{
-		* (i.FUN_0043732c)
+		* (i._ZN2nn3srv6detail7Service16GetServiceHandleEPNS_6HandleEPKcij)
 	}
 }
 IsToCallShutdownCallback 0x00437388

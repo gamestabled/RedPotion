@@ -1,4 +1,4 @@
-#include <nn/svc/svc_Api.h>
+#include <nn/svc/svc.h>
 
 extern "C" void nninitRegion();
 extern "C" void _fp_init();

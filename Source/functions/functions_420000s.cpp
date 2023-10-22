@@ -384,8 +384,6 @@ GLOBAL_ASM("asm/Sleep_00437268.s")
 
 GLOBAL_ASM("asm/WakeUp_004372bc.s")
 
-GLOBAL_ASM("asm/FUN_0043732c.s")
-
 GLOBAL_ASM("asm/IsToCallShutdownCallback.s")
 
 GLOBAL_ASM("asm/ClearShutdownCallbackFlag.s")

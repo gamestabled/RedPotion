@@ -10286,7 +10286,7 @@ Initialize_00437124,00437124,264,U
 OrderToWaitForFinalize_0043722c,0043722c,60,U
 Sleep_00437268,00437268,84,U
 WakeUp_004372bc,004372bc,112,U
-FUN_0043732c,0043732c,92,U
+_ZN2nn3srv6detail7Service16GetServiceHandleEPNS_6HandleEPKcij,0043732c,92,U
 IsToCallShutdownCallback,00437388,16,U
 ClearShutdownCallbackFlag,00437398,20,U
 IsToCallPowerButtonCallback,004373ac,16,U
