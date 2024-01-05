@@ -107,7 +107,21 @@ target_compile_options(RedPotion PUBLIC $<$<COMPILE_LANGUAGE:C>:
     -Otime --data-reorder --split_sections
     >)
 
+target_compile_options(nnsdk PUBLIC $<$<COMPILE_LANGUAGE:CXX>:
+    --apcs=//interwork --cpu=MPCore --fpmode=fast --cpp --arm --force_new_nothrow
+    --signed_chars --multibyte-chars --locale=japanese --no_vfe # workaround, vfe should be enabled
+    --no_rtti_data --no_rtti --no_exceptions -O3 -Otime --data-reorder --split_sections --forceinline
+    >)
+
+target_compile_options(nnsdk PUBLIC $<$<COMPILE_LANGUAGE:C>:
+    --apcs=//interwork --cpu=MPCore --fpmode=fast --c99 --arm
+    --signed_chars --multibyte-chars --locale=japanese
+    -Otime --data-reorder --split_sections
+    >)
+
 target_include_directories(RedPotion PUBLIC ${CMAKE_SOURCE_DIR}/Include ${CMAKE_SOURCE_DIR}/Library/nnsdk/Include ${CMAKE_SOURCE_DIR}/Source/Game)
+
+set_source_files_properties(${CMAKE_SOURCE_DIR}/Source/data/conststring.cpp PROPERTIES COMPILE_FLAGS --no_data_reorder)
 
 add_dependencies(RedPotion disasm)
 
