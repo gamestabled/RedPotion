@@ -86,8 +86,6 @@ GLOBAL_ASM("asm/GetRegion.s")
 
 GLOBAL_ASM("asm/LoadDefaultComponent.s")
 
-GLOBAL_ASM("asm/Throw.s")
-
 GLOBAL_ASM("asm/CreateHeap.s")
 
 GLOBAL_ASM("asm/Reset.s")
@@ -341,8 +339,6 @@ GLOBAL_ASM("asm/GetConfig.s")
 GLOBAL_ASM("asm/GetConfig_00435f90.s")
 
 GLOBAL_ASM("asm/SecureInfoGetRegion.s")
-
-GLOBAL_ASM("asm/Throw_0043608c.s")
 
 GLOBAL_ASM("asm/FUN_004360c4.s")
 

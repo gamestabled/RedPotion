@@ -530,8 +530,6 @@ GLOBAL_ASM("asm/FUN_00335044.s")
 
 GLOBAL_ASM("asm/ObjSwitch_InitTrisCollider.s")
 
-GLOBAL_ASM("asm/_ZN2nn3err3CTR13ThrowFatalErrENS_6ResultE.s")
-
 GLOBAL_ASM("asm/EnterImpl_003351e8.s")
 
 GLOBAL_ASM("asm/FUN_0033526c.s")

@@ -39780,18 +39780,18 @@ FUN_00306994 0x00306994
 		* (i.FUN_00306994)
 	}
 }
-FUN_003069cc 0x003069cc
+_ZN2nn2os15CriticalSection5LeaveEv 0x003069cc
 {
-	FUN_003069cc 0x003069cc
+	_ZN2nn2os15CriticalSection5LeaveEv 0x003069cc
 	{
-		* (i.FUN_003069cc)
+		* (i._ZN2nn2os15CriticalSection5LeaveEv)
 	}
 }
-FUN_00306a34 0x00306a34
+_ZN2nn2os15CriticalSection5EnterEv 0x00306a34
 {
-	FUN_00306a34 0x00306a34
+	_ZN2nn2os15CriticalSection5EnterEv 0x00306a34
 	{
-		* (i.FUN_00306a34)
+		* (i._ZN2nn2os15CriticalSection5EnterEv)
 	}
 }
 FUN_00306aa8 0x00306aa8
@@ -40844,11 +40844,11 @@ FUN_0030b174 0x0030b174
 		* (i.FUN_0030b174)
 	}
 }
-Wait 0x0030b304
+_ZN2nn2os10LightEvent4WaitEv 0x0030b304
 {
-	Wait 0x0030b304
+	_ZN2nn2os10LightEvent4WaitEv 0x0030b304
 	{
-		* (i.Wait)
+		* (i._ZN2nn2os10LightEvent4WaitEv)
 	}
 }
 TryWait 0x0030b3ac
@@ -71945,11 +71945,11 @@ LoadDefaultComponent 0x00422dfc
 		* (i.LoadDefaultComponent)
 	}
 }
-Throw 0x00422e80
+_ZN2nn3err3CTR9ANONYMOUS5ThrowERNS1_12FatalErrInfoE 0x00422e80
 {
-	Throw 0x00422e80
+	_ZN2nn3err3CTR9ANONYMOUS5ThrowERNS1_12FatalErrInfoE 0x00422e80
 	{
-		* (i.Throw)
+		* (i._ZN2nn3err3CTR9ANONYMOUS5ThrowERNS1_12FatalErrInfoE)
 	}
 }
 CreateHeap 0x00423010
@@ -72855,11 +72855,11 @@ _ZN2nn3dsp3CTR5AwakeEv 0x00436070
 		* (i._ZN2nn3dsp3CTR5AwakeEv)
 	}
 }
-Throw_0043608c 0x0043608c
+_ZN2nn3err3CTR8FatalErr5ThrowERKNS1_12FatalErrInfoE 0x0043608c
 {
-	Throw_0043608c 0x0043608c
+	_ZN2nn3err3CTR8FatalErr5ThrowERKNS1_12FatalErrInfoE 0x0043608c
 	{
-		* (i.Throw_0043608c)
+		* (i._ZN2nn3err3CTR8FatalErr5ThrowERKNS1_12FatalErrInfoE)
 	}
 }
 FUN_004360c4 0x004360c4
@@ -83763,6 +83763,14 @@ RO_SECTION 0x004CA000
     {
         *(i.rodata_4DF3FC)
     }
+    constring 0x004ED390
+    {
+        *conststring.o(.constdata)
+    }
+    rodata_4F821C 0x004F821C
+    {
+        *(i.rodata_4F821C)
+    }
 }
 
 RW_SECTION 0x004F9000 
@@ -87147,9 +87155,13 @@ RW_SECTION 0x004F9000
     {
         *(i.dsp.data)
     }
-    data_54A9BC +0
+    err.data +0
     {
-        *(i.data_54A9BC)
+        *err.o(+DATA)
+    }
+    data_54A9C4 +0
+    {
+        *(i.data_54A9C4)
     }
     data_54ac20 +0
     {
@@ -87163,17 +87175,21 @@ RW_SECTION 0x004F9000
     {
         *(i.data_54AC28)
     }
-    RW +0
+    RW +0 /* 0x0055A220 */
     {
         * (+RW-DATA)
     }
-    z_bg_treemouth.bss +0x00F8C8
+    z_bg_treemouth.bss +0x00F8C8 /* 0x00569AE8 */
     {
         *z_bg_treemouth.o(+BSS)
     }
-    z_common_data.bss +0x01DE58
+    z_common_data.bss +0x01DE58 /* 0x00587958 */
     {
         *z_common_data.o(+BSS)
+    }
+    err.bss +0x02595C /* 0x005AE878 */
+    {
+        *err.o(+BSS)
     }
     ZI +0
     {
@@ -87191,7 +87207,7 @@ MODULE_INFO     (0x00100000 + (0x04000000 - 0x00100000))
 
 GARBAGE_SECTION 0x00832000
 {
-    REST_SECTION 0x00632000
+    REST_SECTION 0x00832000
     {
         * (unplaced_inlines)
         * (stubs)
