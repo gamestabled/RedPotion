@@ -3,5 +3,4 @@
 	url = https://github.com/3dsdecomp/asm-differ
 [submodule "Library/nnsdk"]
 	path = Library/nnsdk
-	url = https://github.com/3dsdecomp/nnsdk
-
+	url = git@github.com:gamestabled/auto_nnsdk.git

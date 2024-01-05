@@ -59,7 +59,7 @@ add_custom_target(
 
 add_custom_command(
     DEPENDS n3dsdisasm
-    COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && py ./tools/split_n3dsdisasm.py baserom.s asm
+    COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && py ./tools/split_n3dsdisasm.py ${BASEROM_DIR}/baserom.s asm
     COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && py ./tools/split_data_chunks.py
     COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && touch split_asm.txt
     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/split_asm.txt

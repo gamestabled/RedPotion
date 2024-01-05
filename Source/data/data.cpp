@@ -24,7 +24,7 @@ GLOBAL_ASM("data/data_53CC7C.s")
 
 GLOBAL_ASM("data/data_5495F4.s")
 
-GLOBAL_ASM("data/data_54A9BC.s")
+GLOBAL_ASM("data/data_54A9C4.s")
 
 f32 FLOAT_0054ac20 __attribute__((section(".data_54ac20"))) = 1.0f;
 

@@ -13,9 +13,6 @@ find_program(ARM_CC NAMES armcc.exe PATHS $ENV{ARMCC_PATH}/bin REQUIRED NO_DEFAU
 find_program(ARM_LINK NAMES armlink.exe PATHS $ENV{ARMCC_PATH}/bin REQUIRED NO_DEFAULT_PATH)
 find_program(ARM_FROMELF NAMES fromelf.exe PATHS $ENV{ARMCC_PATH}/bin REQUIRED NO_DEFAULT_PATH)
 
-add_subdirectory(Library/nnsdk)
-add_subdirectory(Disassembly)
-
 macro (set_compilers)
     set(CMAKE_CXX_COMPILER_ID ARMCC)
 
@@ -44,6 +41,9 @@ set(CMAKE_EXECUTABLE_SUFFIX ".axf")
 __compiler_armcc(C)
 __compiler_armcc(CXX)
 __compiler_armcc(ASM)
+
+add_subdirectory(Library/nnsdk)
+add_subdirectory(Disassembly)
 
 set(DEPS_DIR ${CMAKE_CURRENT_BINARY_DIR}/deps)
 set(ASM_LIBS_DIR ${CMAKE_CURRENT_BINARY_DIR}/asm_libs)
@@ -107,7 +107,21 @@ target_compile_options(RedPotion PUBLIC $<$<COMPILE_LANGUAGE:C>:
     -Otime --data-reorder --split_sections
     >)
 
+target_compile_options(nnsdk PUBLIC $<$<COMPILE_LANGUAGE:CXX>:
+    --apcs=//interwork --cpu=MPCore --fpmode=fast --cpp --arm --force_new_nothrow
+    --signed_chars --multibyte-chars --locale=japanese --no_vfe # workaround, vfe should be enabled
+    --no_rtti_data --no_rtti --no_exceptions -O3 -Otime --data-reorder --split_sections --forceinline
+    >)
+
+target_compile_options(nnsdk PUBLIC $<$<COMPILE_LANGUAGE:C>:
+    --apcs=//interwork --cpu=MPCore --fpmode=fast --c99 --arm
+    --signed_chars --multibyte-chars --locale=japanese
+    -Otime --data-reorder --split_sections
+    >)
+
 target_include_directories(RedPotion PUBLIC ${CMAKE_SOURCE_DIR}/Include ${CMAKE_SOURCE_DIR}/Library/nnsdk/Include ${CMAKE_SOURCE_DIR}/Source/Game)
+
+set_source_files_properties(${CMAKE_SOURCE_DIR}/Source/data/conststring.cpp PROPERTIES COMPILE_FLAGS --no_data_reorder)
 
 add_dependencies(RedPotion disasm)
 

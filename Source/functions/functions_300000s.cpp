@@ -310,10 +310,6 @@ GLOBAL_ASM("asm/snwprintf.s")
 
 GLOBAL_ASM("asm/FUN_00306994.s")
 
-GLOBAL_ASM("asm/FUN_003069cc.s")
-
-GLOBAL_ASM("asm/FUN_00306a34.s")
-
 GLOBAL_ASM("asm/FUN_00306aa8.s")
 
 GLOBAL_ASM("asm/Shutdown.s")
@@ -611,8 +607,6 @@ GLOBAL_ASM("asm/FUN_0030b130.s")
 GLOBAL_ASM("asm/FUN_0030b13c.s")
 
 GLOBAL_ASM("asm/FUN_0030b174.s")
-
-GLOBAL_ASM("asm/Wait.s")
 
 GLOBAL_ASM("asm/TryWait.s")
 

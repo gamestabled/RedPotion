@@ -86,8 +86,6 @@ GLOBAL_ASM("asm/GetRegion.s")
 
 GLOBAL_ASM("asm/LoadDefaultComponent.s")
 
-GLOBAL_ASM("asm/Throw.s")
-
 GLOBAL_ASM("asm/CreateHeap.s")
 
 GLOBAL_ASM("asm/Reset.s")
@@ -342,8 +340,6 @@ GLOBAL_ASM("asm/GetConfig_00435f90.s")
 
 GLOBAL_ASM("asm/SecureInfoGetRegion.s")
 
-GLOBAL_ASM("asm/Throw_0043608c.s")
-
 GLOBAL_ASM("asm/FUN_004360c4.s")
 
 GLOBAL_ASM("asm/FUN_00436218.s")
@@ -383,8 +379,6 @@ GLOBAL_ASM("asm/OrderToWaitForFinalize_0043722c.s")
 GLOBAL_ASM("asm/Sleep_00437268.s")
 
 GLOBAL_ASM("asm/WakeUp_004372bc.s")
-
-GLOBAL_ASM("asm/FUN_0043732c.s")
 
 GLOBAL_ASM("asm/IsToCallShutdownCallback.s")
 
