@@ -42,19 +42,36 @@ __compiler_armcc(C)
 __compiler_armcc(CXX)
 __compiler_armcc(ASM)
 
-add_subdirectory(Library/nnsdk)
+add_subdirectory(Library)
 add_subdirectory(Disassembly)
+
+file(GLOB_RECURSE csourcefiles ${CMAKE_CURRENT_SOURCE_DIR}/Source/*.c)
+file(GLOB_RECURSE cxxsourcefiles ${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp)
+
+SET(CXX_FLAGS "--apcs=//interwork --cpu=MPCore --fpmode=fast --cpp --arm --force_new_nothrow --signed_chars --multibyte-chars --locale=japanese --no_rtti_data --no_rtti --no_exceptions --data-reorder --split_sections --forceinline -O3 -Otime")
+
+SET_SOURCE_FILES_PROPERTIES(
+    ${cxxsourcefiles}
+    PROPERTIES
+    COMPILE_FLAGS "${CXX_FLAGS}"
+    )
+
+SET_SOURCE_FILES_PROPERTIES(
+    ${CMAKE_SOURCE_DIR}/data/conststring.cpp
+    PROPERTIES
+    COMPILE_FLAGS
+    "${CXX_FLAGS} --no_data_reorder"
+    )
+
+add_executable(RedPotion ${csourcefiles} ${cxxsourcefiles})
 
 set(DEPS_DIR ${CMAKE_CURRENT_BINARY_DIR}/deps)
 set(ASM_LIBS_DIR ${CMAKE_CURRENT_BINARY_DIR}/asm_libs)
 set(DISASSEMBLY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Disassembly)
 file(MAKE_DIRECTORY ${DEPS_DIR} ${ASM_LIBS_DIR})
 
-file(GLOB_RECURSE csourcefiles "Source/*.c")
-file(GLOB_RECURSE cxxsourcefiles "Source/*.cpp")
 file(GLOB_RECURSE asm_libs "${ASM_LIBS_DIR}")
 
-add_executable(RedPotion ${csourcefiles} ${cxxsourcefiles})
 target_link_directories(RedPotion PUBLIC ${asm_libs})
 
 find_program(DEVKITARM_GCC NAMES arm-none-eabi-gcc.exe PATHS $ENV{DEVKITARM}/bin REQUIRED NO_DEFAULT_PATH)
@@ -95,33 +112,7 @@ target_link_options(RedPotion PUBLIC
     --scatter=${CMAKE_CURRENT_SOURCE_DIR}/Data/oot3d.ld
     )
 
-target_compile_options(RedPotion PUBLIC $<$<COMPILE_LANGUAGE:CXX>:
-    --apcs=//interwork --cpu=MPCore --fpmode=fast --cpp --arm --force_new_nothrow
-    --signed_chars --multibyte-chars --locale=japanese --no_vfe # workaround, vfe should be enabled
-    --no_rtti_data --no_rtti --no_exceptions -O3 -Otime --data-reorder --split_sections --forceinline
-    >)
-
-target_compile_options(RedPotion PUBLIC $<$<COMPILE_LANGUAGE:C>:
-    --apcs=//interwork --cpu=MPCore --fpmode=fast --c99 --arm
-    --signed_chars --multibyte-chars --locale=japanese
-    -Otime --data-reorder --split_sections
-    >)
-
-target_compile_options(nnsdk PUBLIC $<$<COMPILE_LANGUAGE:CXX>:
-    --apcs=//interwork --cpu=MPCore --fpmode=fast --cpp --arm --force_new_nothrow
-    --signed_chars --multibyte-chars --locale=japanese --no_vfe # workaround, vfe should be enabled
-    --no_rtti_data --no_rtti --no_exceptions -O3 -Otime --data-reorder --split_sections --forceinline
-    >)
-
-target_compile_options(nnsdk PUBLIC $<$<COMPILE_LANGUAGE:C>:
-    --apcs=//interwork --cpu=MPCore --fpmode=fast --c99 --arm
-    --signed_chars --multibyte-chars --locale=japanese
-    -Otime --data-reorder --split_sections
-    >)
-
 target_include_directories(RedPotion PUBLIC ${CMAKE_SOURCE_DIR}/Include ${CMAKE_SOURCE_DIR}/Library/nnsdk/Include ${CMAKE_SOURCE_DIR}/Source/Game)
-
-set_source_files_properties(${CMAKE_SOURCE_DIR}/Source/data/conststring.cpp PROPERTIES COMPILE_FLAGS --no_data_reorder)
 
 add_dependencies(RedPotion disasm)
 
