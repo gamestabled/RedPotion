@@ -134,6 +134,8 @@ ZARInfo* FUN_003532c0(ZARInfo* zarInfo, s32 arg1);
 s32 DynaPoly_SetBgActor(PlayState* play, DynaCollisionContext* dyna, Actor* actor, CollisionHeader* colHeader);
 void DynaPoly_DeleteBgActor(PlayState* play, DynaCollisionContext* dyna, s32 bgId);
 void FUN_0036b940(PlayState* play, DynaCollisionContext* dyna, s32 bgId);
+void FUN_0036d15c(PlayState* play, DynaCollisionContext* dyna, s32 bgId);
+u32 FUN_00374be8(PlayState* play, u32 arg1);
 void FUN_00357fd0(Player* player, void* arg1, Vec3f* pos);
 void FUN_003695cc(SkeletonAnimationModel* skelAnimModel, s32 arg1, s32 arg2, s32 arg3, f32 arg4, f32 arg5, f32 arg6,
                   f32 arg7);

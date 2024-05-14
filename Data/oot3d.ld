@@ -84331,10 +84331,6 @@ RW_SECTION 0x004F9000
     {
         *z_actor_1da.o(+DATA)
     }
-    z_Actor_1DA_ASM.data +0
-    {
-        *(i.z_Actor_1DA.data)
-    }
     z_bg_mizu_shutter.data +0
     {
         *z_bg_mizu_shutter.o(+DATA)

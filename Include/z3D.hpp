@@ -21,23 +21,6 @@
 typedef struct GraphicsContext GraphicsContext; //TODO
 
 typedef struct {
-    /* 0x00 */ CollisionHeader* colHeader;
-    /* 0x04 */ char             unk_04[0x4C];
-} StaticCollisionContext; // size = 0x50
-
-typedef struct {
-    /* 0x0000 */ char   unk_00[0x04];
-    /* 0x0004 */ ActorMesh actorMeshArr[50];
-    /* 0x151C */ u16    flags[50];
-    /* 0x1580 */ char   unk_13F0[0x24];
-} DynaCollisionContext; // size = 0x15A4
-
-typedef struct {
-    /* 0x0000 */ StaticCollisionContext stat;
-    /* 0x0050 */ DynaCollisionContext   dyna;
-} CollisionContext; // size = 0x15F4
-
-typedef struct {
     /* 0x0000 */ u32 size;
     /* 0x0004 */ void* bufp;
     /* 0x0008 */ void* head;
