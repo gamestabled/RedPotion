@@ -48,7 +48,7 @@ add_subdirectory(Disassembly)
 file(GLOB_RECURSE csourcefiles ${CMAKE_CURRENT_SOURCE_DIR}/Source/*.c)
 file(GLOB_RECURSE cxxsourcefiles ${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp)
 
-SET(CXX_FLAGS "--apcs=//interwork --cpu=MPCore --fpmode=fast --cpp --arm --force_new_nothrow --signed_chars --multibyte-chars --locale=japanese --no_rtti_data --no_rtti --no_exceptions --data-reorder --split_sections --forceinline -O3 -Otime")
+SET(CXX_FLAGS "--apcs=//interwork --cpu=MPCore --fpmode=fast --vfe --no_rtti --no_rtti_data --cpp --arm --force_new_nothrow --signed_chars --multibyte-chars --locale=japanese --data-reorder --split_sections --forceinline -O3 -Otime")
 
 SET_SOURCE_FILES_PROPERTIES(
     ${cxxsourcefiles}
@@ -65,38 +65,32 @@ SET_SOURCE_FILES_PROPERTIES(
 
 add_executable(RedPotion ${csourcefiles} ${cxxsourcefiles})
 
-set(DEPS_DIR ${CMAKE_CURRENT_BINARY_DIR}/deps)
-set(ASM_LIBS_DIR ${CMAKE_CURRENT_BINARY_DIR}/asm_libs)
+add_custom_command(
+    DEPENDS RedPotion ${CMAKE_CURRENT_BINARY_DIR}/RedPotion.axf
+    COMMAND ${ARM_FROMELF} --bincombined --bincombined_padding=1,0x00 ${CMAKE_CURRENT_BINARY_DIR}/RedPotion.axf --output ${CMAKE_CURRENT_BINARY_DIR}/code.bin
+    COMMAND python -c "with open('${CMAKE_CURRENT_BINARY_DIR}/code.bin', 'a') as code: code.truncate(0x45B000)"
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/code.bin
+    COMMENT "Creating code.bin..."
+)
+
+add_custom_target(
+    code
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/code.bin
+)
+
+set(NON_MATCH_ASM_FILES ${CMAKE_CURRENT_BINARY_DIR}/nonmatch)
 set(DISASSEMBLY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Disassembly)
-file(MAKE_DIRECTORY ${DEPS_DIR} ${ASM_LIBS_DIR})
-
-file(GLOB_RECURSE asm_libs "${ASM_LIBS_DIR}")
-
-target_link_directories(RedPotion PUBLIC ${asm_libs})
-
-find_program(DEVKITARM_GCC NAMES arm-none-eabi-gcc.exe PATHS $ENV{DEVKITARM}/bin REQUIRED NO_DEFAULT_PATH)
+file(MAKE_DIRECTORY ${NON_MATCH_ASM_FILES})
 
 foreach(CPP_FILE ${cxxsourcefiles})
     get_filename_component(FILE_NAME ${CPP_FILE} NAME_WE)
     add_custom_command(
-        OUTPUT ${DEPS_DIR}/${FILE_NAME}.deps
-        COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/tools/preproc.py ${CPP_FILE} ${DEPS_DIR}/${FILE_NAME}.deps "${DISASSEMBLY_DIR}/"
+        OUTPUT ${NON_MATCH_ASM_FILES}/${FILE_NAME}.s
+        COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/tools/preproc.py ${CPP_FILE} ${NON_MATCH_ASM_FILES}/${FILE_NAME}.s "${DISASSEMBLY_DIR}/"
         DEPENDS ${CPP_FILE}
     )
-    add_custom_target(${FILE_NAME}_deps DEPENDS ${DEPS_DIR}/${FILE_NAME}.deps)
-endforeach()
-
-foreach(CPP_FILE ${cxxsourcefiles})
-    get_filename_component(FILE_NAME ${CPP_FILE} NAME_WE)
-    set(DEPS_FILE ${DEPS_DIR}/${FILE_NAME}.deps)
-    add_custom_command(
-        OUTPUT ${ASM_LIBS_DIR}/${FILE_NAME}_asm.o
-        COMMAND cd ${DISASSEMBLY_DIR} && python3 ${CMAKE_CURRENT_SOURCE_DIR}/tools/build_asm_deps.py "${DEVKITARM_GCC} -mfpu=vfpv2 -mcpu=MPCore -march=armv6k -marm -mno-thumb-interwork -r" "${DEPS_FILE}" "${ASM_LIBS_DIR}/${FILE_NAME}_asm.o"
-        DEPENDS ${DEPS_DIR}/${FILE_NAME}.deps disasm
-    )
-    add_custom_target(${FILE_NAME}_asm DEPENDS ${ASM_LIBS_DIR}/${FILE_NAME}_asm.o)
-    add_dependencies(RedPotion ${FILE_NAME}_asm)
-    target_link_libraries(RedPotion PUBLIC ${ASM_LIBS_DIR}/${FILE_NAME}_asm.o)
+    set_source_files_properties(${NON_MATCH_ASM_FILES}/${FILE_NAME}.s PROPERTIES COMPILE_FLAGS "--cpu=MPCore")
+    target_sources(RedPotion PUBLIC ${NON_MATCH_ASM_FILES}/${FILE_NAME}.s)
 endforeach()
 
 target_link_libraries(RedPotion PUBLIC 
@@ -108,11 +102,11 @@ target_link_options(RedPotion PUBLIC
     --ref_cpp_init --scanlib --legacyalign
     --tailreorder --no_remove --datacompressor=off
     --inline 
-    --verbose --mangled --symbols
+    --verbose --mangled --symbols --vfemode=force
     --scatter=${CMAKE_CURRENT_SOURCE_DIR}/Data/oot3d.ld
+    --diag_suppress=6238,6642
     )
 
 target_include_directories(RedPotion PUBLIC ${CMAKE_SOURCE_DIR}/Include ${CMAKE_SOURCE_DIR}/Library/nnsdk/Include ${CMAKE_SOURCE_DIR}/Source/Game)
 
 add_dependencies(RedPotion disasm)
-
