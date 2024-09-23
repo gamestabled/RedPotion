@@ -100,11 +100,11 @@ target_link_libraries(RedPotion PUBLIC
 target_link_options(RedPotion PUBLIC
     --cpu=MPCore --entry=__ctr_start --startup=__ctr_start --library_type=standardlib
     --ref_cpp_init --scanlib --legacyalign
-    --tailreorder --no_remove --datacompressor=off
-    --inline 
+    --tailreorder --remove --datacompressor=off
+    --inline --via ${CMAKE_CURRENT_SOURCE_DIR}/Symbols/keep_symbols.txt
     --verbose --mangled --symbols --vfemode=force
     --scatter=${CMAKE_CURRENT_SOURCE_DIR}/Data/oot3d.ld
-    --diag_suppress=6238,6642
+    --diag_suppress=6238,6306
     )
 
 target_include_directories(RedPotion PUBLIC ${CMAKE_SOURCE_DIR}/Include ${CMAKE_SOURCE_DIR}/Library/nnsdk/Include ${CMAKE_SOURCE_DIR}/Source/Game)

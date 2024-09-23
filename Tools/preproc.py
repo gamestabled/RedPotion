@@ -3,6 +3,12 @@ import re
 from pathlib import Path
 from typing import Tuple, Set
 
+vfe_section = f"""
+\tAREA ||.arm_vfe_header||, DATA, READONLY, NOALLOC, ALIGN=2
+
+\tDCD      0x00000000
+"""
+
 
 def is_branch_instruction(instruction: str) -> bool:
     return instruction.startswith('b') and not (instruction.startswith('bf') or 
@@ -63,4 +69,7 @@ with open(sys.argv[1], 'r') as srcFile:
             for neededSymbol in neededSymbols:
                 if neededSymbol not in definedSymbols:
                     nonMatchingsFile.write(f"\tEXTERN {neededSymbol}\n")
+
+            nonMatchingsFile.write(vfe_section)
+
             nonMatchingsFile.write("\tEND\n")

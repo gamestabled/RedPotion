@@ -40708,9 +40708,9 @@ text 0x00100000
 	{
 		* (i.FUN_0041acc0)
 	}
-	_ZN3z3D12Class_4EBE18C2Ev 0x0041ae54
+	_ZN3z3D12Class_4EBE18C1Ev 0x0041ae54
 	{
-		* (i._ZN3z3D12Class_4EBE18C2Ev)
+		* (i._ZN3z3D12Class_4EBE18C1Ev)
 	}
 	FUN_0041ae84 0x0041ae84
 	{
