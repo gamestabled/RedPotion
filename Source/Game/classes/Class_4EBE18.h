@@ -12,11 +12,11 @@ class Class_4EBE18 {
 public:
     Class_4EBE18();
 
-    virtual ~Class_4EBE18() = 0; // vfptr_4EBE20
+    virtual ~Class_4EBE18() {}
     virtual void FUN_00417240(void* address, size_t size);
-    virtual void vfptr_4EBE2C() = 0;
-    virtual void vfptr_4EBE30() = 0;
-    virtual void vfptr_4EBE34(s32, s32) = 0;
+    virtual void vfptr_4EBE2C() {}
+    virtual void vfptr_4EBE30() {}
+    virtual void vfptr_4EBE34(s32, s32) {}
     virtual bool FUN_003fbcf8(void* address, size_t size);
 
     void FUN_003119b4(s32, s32, s32, s32, s32, s32);
