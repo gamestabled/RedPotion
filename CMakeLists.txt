@@ -101,7 +101,7 @@ target_link_options(RedPotion PUBLIC
     --cpu=MPCore --entry=__ctr_start --startup=__ctr_start --library_type=standardlib
     --ref_cpp_init --scanlib --legacyalign
     --tailreorder --remove --datacompressor=off
-    --inline --via ${CMAKE_CURRENT_SOURCE_DIR}/Symbols/keep_symbols.txt
+    --inline --via ${CMAKE_CURRENT_SOURCE_DIR}/Data/keep_symbols.txt
     --verbose --mangled --symbols --vfemode=force
     --scatter=${CMAKE_CURRENT_SOURCE_DIR}/Data/oot3d.ld
     --diag_suppress=6238,6306
