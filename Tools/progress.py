@@ -7,6 +7,7 @@ import git
 import os
 import re
 from pathlib import Path
+import math
 
 parser = argparse.ArgumentParser(description="Computes current progress throughout the whole project.")
 parser.add_argument("format", nargs="?", default="text", choices=["text", "csv", "shield-json"])
@@ -63,12 +64,13 @@ def GetNonMatchingSize(path):
 
             for asmLine in asmLines:
                 if asmLine.startswith("\t"):
-                    if not (asmLine.startswith("\t.") or asmLine.startswith("\tarm_func_start") or asmLine.startswith("\t.byte")):
+                    asmLineStripped = asmLine.strip()
+                    if not (asmLineStripped.startswith("AREA") or asmLine.startswith("EXPORT") or asmLine.startswith("END")):
                         size += 4
-                    elif asmLine.startswith("\t.byte"):
-                        size += int((len(asmLine.strip()) - 4) / 6)
-                elif asmLine.count(".4byte") > 0:
+                elif asmLine.count(" DCD ") > 0:
                     size += 4
+                elif asmLine.count(" DCB ") > 0:
+                    size = 4 * math.ceil(size / 4.0)
 
     return size
 

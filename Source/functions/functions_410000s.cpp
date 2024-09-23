@@ -614,8 +614,6 @@ GLOBAL_ASM("asm/FUN_00417188.s")
 
 GLOBAL_ASM("asm/FUN_0041721c.s")
 
-GLOBAL_ASM("asm/v08.s")
-
 GLOBAL_ASM("asm/FUN_0041724c.s")
 
 GLOBAL_ASM("asm/AutoClass3.s")
@@ -747,8 +745,6 @@ GLOBAL_ASM("asm/FUN_0041ac64.s")
 GLOBAL_ASM("asm/FUN_0041ac88.s")
 
 GLOBAL_ASM("asm/FUN_0041acc0.s")
-
-GLOBAL_ASM("asm/FUN_0041ae54.s")
 
 GLOBAL_ASM("asm/FUN_0041ae84.s")
 

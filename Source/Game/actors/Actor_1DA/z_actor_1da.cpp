@@ -53,7 +53,7 @@ GLOBAL_ASM("asm/Actor1DA_Init.s")
 GLOBAL_ASM("asm/Actor1DA_Destroy.s")
 #endif
 
-inline void func(Actor1DA* self, PlayState* play) {
+static inline void Actor1DA_UpdateUnknown(Actor1DA* self, PlayState* play) {
     if (FUN_00374be8(play, 2)) {
         FUN_0036b940(play, &play->colCtx.dyna, self->dyna.bgId);
     } else {
@@ -66,7 +66,7 @@ void Actor1DA_Update(Actor* actor, GameState* state) {
     PlayState* play = (PlayState*)state;
 
     if (self->dyna.actor.params == 0) {
-        func(self, play);
+        Actor1DA_UpdateUnknown(self, play);
     }
 }
 

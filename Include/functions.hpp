@@ -165,4 +165,7 @@ void Gameplay_ClearCamera(PlayState* play, s16 camId);
 s32 FUN_0036bb28(Actor* actor, PlayState* play, f32 arg2);
 void FUN_0035ae08(Actor* actor, u32 sfxId);
 
+void FUN_00312fc4(void* address, size_t size);
+void FUN_00311c70(u32 arg0);
+
 float sqrtf(float arg);

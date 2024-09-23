@@ -52,8 +52,6 @@ GLOBAL_ASM("asm/glGenRenderbuffers.s")
 
 GLOBAL_ASM("asm/nngxRunCmdlist.s")
 
-GLOBAL_ASM("asm/FUN_003119b4.s")
-
 GLOBAL_ASM("asm/nngxDisplayEnv.s")
 
 GLOBAL_ASM("asm/nngxGetDisplaybufferParameteri.s")
@@ -75,8 +73,6 @@ GLOBAL_ASM("asm/FUN_00312080.s")
 GLOBAL_ASM("asm/nngxBindCmdlist.s")
 
 GLOBAL_ASM("asm/nngxGenCmdlists.s")
-
-GLOBAL_ASM("asm/Panic.s")
 
 GLOBAL_ASM("asm/nngxInitialize.s")
 

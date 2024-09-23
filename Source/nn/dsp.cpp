@@ -5,7 +5,6 @@ GLOBAL_ASM("data/dsp.data.s")
 GLOBAL_ASM("data/dsp.rodata.s")
 
 GLOBAL_ASM("asm/_ZN2nn3dsp3CTR17IsComponentLoadedEv.s")
-GLOBAL_ASM("asm/_ZSt6strlenPKc.s")
 GLOBAL_ASM("asm/_ZN2nn3dsp3CTR15UnloadComponentEv.s")
 GLOBAL_ASM("asm/_ZN2nn3dsp3CTR21SetSemaphoreEventMaskEt.s")
 GLOBAL_ASM("asm/_ZN2nn3dsp3CTR6WakeUpEv.s")
