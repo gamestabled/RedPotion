@@ -30,7 +30,7 @@ if (WIN32)
     set(CMAKE_ASM_COMPILER_WORKS TRUE)
 endif()
 
-project(RedPotion C CXX ASM)
+project(oot3d C CXX ASM)
 
 if (NOT WIN32)
     set_compilers()
@@ -63,11 +63,11 @@ SET_SOURCE_FILES_PROPERTIES(
     "${CXX_FLAGS} --no_data_reorder"
     )
 
-add_executable(RedPotion ${csourcefiles} ${cxxsourcefiles})
+add_executable(oot3d ${csourcefiles} ${cxxsourcefiles})
 
 add_custom_command(
-    DEPENDS RedPotion ${CMAKE_CURRENT_BINARY_DIR}/RedPotion.axf
-    COMMAND ${ARM_FROMELF} --bincombined --bincombined_padding=1,0x00 ${CMAKE_CURRENT_BINARY_DIR}/RedPotion.axf --output ${CMAKE_CURRENT_BINARY_DIR}/code.bin
+    DEPENDS oot3d ${CMAKE_CURRENT_BINARY_DIR}/oot3d.axf
+    COMMAND ${ARM_FROMELF} --bincombined --bincombined_padding=1,0x00 ${CMAKE_CURRENT_BINARY_DIR}/oot3d.axf --output ${CMAKE_CURRENT_BINARY_DIR}/code.bin
     COMMAND python -c "with open('${CMAKE_CURRENT_BINARY_DIR}/code.bin', 'a') as code: code.truncate(0x45B000)"
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/code.bin
     COMMENT "Creating code.bin..."
@@ -76,6 +76,13 @@ add_custom_command(
 add_custom_target(
     code
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/code.bin
+)
+
+add_custom_target(
+    check
+    DEPENDS code ${CMAKE_CURRENT_BINARY_DIR}/code.bin
+    COMMENT "Checking for match..."
+    COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && md5sum -c ${CMAKE_CURRENT_SOURCE_DIR}/Data/checksum.md5
 )
 
 set(NON_MATCH_ASM_FILES ${CMAKE_CURRENT_BINARY_DIR}/nonmatch)
@@ -90,14 +97,12 @@ foreach(CPP_FILE ${cxxsourcefiles})
         DEPENDS ${CPP_FILE}
     )
     set_source_files_properties(${NON_MATCH_ASM_FILES}/${FILE_NAME}.s PROPERTIES COMPILE_FLAGS "--cpu=MPCore")
-    target_sources(RedPotion PUBLIC ${NON_MATCH_ASM_FILES}/${FILE_NAME}.s)
+    target_sources(oot3d PUBLIC ${NON_MATCH_ASM_FILES}/${FILE_NAME}.s)
 endforeach()
 
-target_link_libraries(RedPotion PUBLIC 
-                                nnsdk
-                                )
+target_link_libraries(oot3d PUBLIC nnsdk)
 
-target_link_options(RedPotion PUBLIC
+target_link_options(oot3d PUBLIC
     --cpu=MPCore --entry=__ctr_start --startup=__ctr_start --library_type=standardlib
     --ref_cpp_init --scanlib --legacyalign
     --tailreorder --remove --datacompressor=off
@@ -107,6 +112,6 @@ target_link_options(RedPotion PUBLIC
     --diag_suppress=6238,6306
     )
 
-target_include_directories(RedPotion PUBLIC ${CMAKE_SOURCE_DIR}/Include ${CMAKE_SOURCE_DIR}/Library/nnsdk/Include ${CMAKE_SOURCE_DIR}/Source/Game)
+target_include_directories(oot3d PUBLIC ${CMAKE_SOURCE_DIR}/Include ${CMAKE_SOURCE_DIR}/Library/nnsdk/Include ${CMAKE_SOURCE_DIR}/Source/Game)
 
-add_dependencies(RedPotion disasm)
+add_dependencies(oot3d disasm)
