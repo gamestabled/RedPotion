@@ -49,7 +49,7 @@ add_custom_command(
     DEPENDS extract_baserom ${DISASM_CONFIG}
     COMMAND ${N3DSDISASM} -c ${DISASM_CONFIG} ${BASEROM_DIR}/exefs/code.bin > ${BASEROM_DIR}/baserom_before_fixes.s
     OUTPUT ${BASEROM_DIR}/baserom_before_fixes.s
-    COMMENT "Disassembling code.bin into baserom_before_fixes.s..."
+    COMMENT "Disassembling code.bin into baserom_before_fixes.s...this will take awhile..."
 )
 
 add_custom_target(
@@ -70,8 +70,7 @@ add_custom_target(
 )
 
 add_custom_command(
-    DEPENDS n3dsdisasm_post_fixes
-    # COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && py ./tools/split_n3dsdisasm.py ${BASEROM_DIR}/baserom.s asm
+    DEPENDS n3dsdisasm_post_fixes create_elf
     COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && py ./tools/gcc_to_arm_asm.py ${BASEROM_DIR}/baserom.s asm
     COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && py ./tools/split_arm_data_chunks.py
     COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && touch split_asm.txt
