@@ -2,7 +2,7 @@ import sys
 import os
 
 def get_file_preamble(func_name: str):
-    return fr"""\tAREA |.{func_name}|, CODE, READONLY
+    return f"""\tAREA |i.{func_name}|, CODE, READONLY
 \tEXPORT {func_name}
 """
 
